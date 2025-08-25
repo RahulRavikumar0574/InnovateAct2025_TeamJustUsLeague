@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Live Crash Video</title>
+  <style>
+    body { text-align: center; font-family: Arial, sans-serif; padding: 20px; }
+    canvas { border: 1px solid #333; margin-top: 20px; }
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      border-radius: 5px;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>🚗 Live Crash Dashboard Video Stream</h1>
+  <canvas id="videoCanvas" width="640" height="480"></canvas>
+  <br>
+  <button onclick="window.history.back()">🔙 Back to Dashboard</button>
+
+  <script>
+    const canvas = document.getElementById("videoCanvas");
+    const ctx = canvas.getContext("2d");
+    const ws = new WebSocket("ws://192.168.242.7:8000/ws?role=viewer");
+
+    ws.onopen = () => console.log("📹 Connected to video server");
+    ws.onmessage = (event) => {
+      const img = new Image();
+      img.src = "data:image/jpeg;base64," + event.data;
+      img.onload = () => ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    };
+
+    ws.onclose = () => console.log("❌ Video connection closed");
+  </script>
+</body>
+</html>
